@@ -1,68 +1,48 @@
 import { Request, Response } from 'express';
-import { getDb } from '../database/mongo';
-import bcrypt from 'bcrypt';
+import { crearUsuarioYConductor, buscarConductorPorDni, editarConductor, eliminarConductor } from '../services/usuario.service';
 
-export const registrarUsuarioConductor = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const registrarUsuarioConductor = async (req: Request, res: Response): Promise<void> => {
   try {
-    const {
-      identificacion,
-      password,
-      rol,
-      estado,
-      datos_personal,
-      config_sesion,
-      conductor
-    } = req.body;
-
-    const password_hash = await bcrypt.hash(password, 10);
-    const db = getDb();
-    if (!db) {
-      res.status(500).json({ mensaje: 'Error de conexión con la base de datos' });
-      return;
-    }
-
-    // 1. Crear usuario
-    const usuarioLimpio = {
-      identificacion,
-      password_hash,
-      rol,
-      estado,
-      datos_personal,
-      config_sesion,
-      creado_en: new Date(),
-      actualizado: new Date()
-    };
-
-    const { insertedId: usuarioId } = await db.collection('usuarios').insertOne(usuarioLimpio);
-
-    // 2. Crear conductor asociado
-    const conductorLimpio: any = {
-      usuario_id: usuarioId,
-      numero_licencia: conductor.numero_licencia,
-      categoria_lic: conductor.categoria_lic,
-      estado_conduct: conductor.estado_conduct ?? 'activo',
-      asignaciones: [],
-      creado_en: new Date(),
-      actualizado: new Date()
-    };
-
-    // Agrega solo si existe
-    if (Array.isArray(conductor.documentos)) {
-      conductorLimpio.documentos = conductor.documentos;
-    }
-
-    if (conductor.experiencia && typeof conductor.experiencia === 'object') {
-      conductorLimpio.experiencia = conductor.experiencia;
-    }
-
-    await db.collection('conductores').insertOne(conductorLimpio);
-
-    res.status(201).json({ mensaje: 'Conductor creado con éxito' });
+    const usuario = await crearUsuarioYConductor(req.body);
+    res.status(201).json({ mensaje: 'Conductor creado con éxito', usuario });
   } catch (err) {
     console.error('❌ Error al registrar conductor:', err);
-    res.status(500).json({ mensaje: 'Error interno al registrar conductor' });
+    res.status(500).json({ mensaje: (err as Error).message });
+  }
+};
+
+// 🔹 Buscar conductor por DNI
+export const obtenerConductorPorDni = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { dni } = req.params;
+    const resultado = await buscarConductorPorDni(dni);
+    res.status(200).json(resultado);
+  } catch (err) {
+    console.error('❌ Error al buscar conductor:', err);
+    res.status(404).json({ mensaje: (err as Error).message });
+  }
+};
+
+// 🔹 Editar conductor por DNI
+export const actualizarConductor = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { dni } = req.params;
+    const resultado = await editarConductor(dni, req.body);
+    res.status(200).json(resultado);
+  } catch (err) {
+    console.error('❌ Error al actualizar conductor:', err);
+    res.status(500).json({ mensaje: (err as Error).message });
+  }
+};
+
+// 🔹 Eliminar conductor por DNI
+export const borrarConductor = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { dni } = req.params;
+    const resultado = await eliminarConductor(dni);
+    res.status(200).json(resultado);
+  } catch (err) {
+    console.error('❌ Error al eliminar conductor:', err);
+    res.status(500).json({ mensaje: (err as Error).message });
   }
 };

@@ -2,6 +2,7 @@
 import express from 'express';
 import authRoutes from './routes/auth.routes';
 import usuarioRoutes from './routes/usuario.routes'
+import administradorRoutes from './routes/administrador.routes';
 import { connectToMongo } from './database/mongo';
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json());
 // ✅ Monta rutas correctamente
 app.use('/api/auth', authRoutes); // Esto usará POST /api/auth/login/conductor
 app.use('/api/conductor', usuarioRoutes);
+app.use('/api/administrador', administradorRoutes);
 
 // Conexión y servidor
 connectToMongo().then(() => {

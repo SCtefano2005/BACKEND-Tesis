@@ -21,6 +21,7 @@ export const loginConductor = async (req: Request, res: Response): Promise<void>
   }
 };
 
+
 export const verificarIdentidadConductor = async (req: Request, res: Response): Promise<void> => {
   try {
     const { identificacion, numero_licencia } = req.body;
@@ -87,5 +88,22 @@ export const restablecerContrasena = async (req: Request, res: Response): Promis
   } catch (err) {
     console.error('❌ Error al restablecer contraseña:', err);
     res.status(500).json({ mensaje: 'Error al actualizar contraseña' });
+  }
+};
+
+// ADMINISTRADOR
+export const loginAdministrador = async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400).json({ mensaje: 'Faltan credenciales' });
+    return;
+  }
+
+  try {
+    const resultado = await authService.loginAdministrador(email, password);
+    res.status(200).json(resultado);
+  } catch (err: any) {
+    res.status(401).json({ mensaje: err.message });
   }
 };
