@@ -36,7 +36,7 @@ export const loginConductor = async (identificacion: string, password: string) =
 
 export const loginAdministrador = async (email: string, password: string) => {
   // 1. Buscar usuario por email
-  const usuario = await Usuario.findOne({ email });
+  const usuario = await Usuario.findOne({ "datos_oersonal.email":email });
   if (!usuario) throw new Error('Usuario no encontrado');
 
   // 2. Validar que sea administrador
