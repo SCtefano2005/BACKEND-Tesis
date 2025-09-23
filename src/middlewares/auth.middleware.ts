@@ -16,8 +16,9 @@ export const authMiddleware =
         res.status(401).json({ mensaje: 'Token requerido' });
         return; // 🔑 corta ejecución
       }
+      const JWT_SECRET: string = process.env.JWT_SECRET ?? 'dev_secret';
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as AuthPayload;
+      const decoded = jwt.verify(token, JWT_SECRET) as AuthPayload;
 
       if (roles.length && !roles.includes(decoded.rol)) {
         res.status(403).json({ mensaje: 'No autorizado' });
