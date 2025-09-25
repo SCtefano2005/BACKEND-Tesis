@@ -1,3 +1,4 @@
+// src/controllers/administrador.controller.ts
 import { Request, Response } from 'express';
 import { crearUsuarioYAdministrador } from '../services/administrador.service'
 

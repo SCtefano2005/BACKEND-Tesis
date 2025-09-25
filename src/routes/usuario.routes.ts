@@ -1,3 +1,4 @@
+// src/routes/usuario.routes.ts
 import { Router } from 'express';
 import { actualizarConductor, borrarConductor, obtenerConductorPorDni, registrarUsuarioConductor } from '../controllers/usuario.controller';
 import { validate } from '../middlewares/validate';
