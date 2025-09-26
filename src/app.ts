@@ -4,6 +4,7 @@ import authRoutes from './routes/auth.routes';
 import usuarioRoutes from './routes/usuario.routes'
 import administradorRoutes from './routes/administrador.routes';
 import http from 'http';
+import cors from "cors";
 import rutaRoutes from './routes/ruta.routes'
 import viajeRoutes from './routes/viaje.route';
 import busRoutes from './routes/bus.routes';
@@ -21,7 +22,11 @@ const io = new Server(server, {
   },
 });
 const PORT = 3000;
-
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+}))
 app.use(express.json());
 
 // ✅ Monta rutas correctamente
