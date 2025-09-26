@@ -26,8 +26,11 @@ app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
+  // 💡 AÑADIR ESTA LÍNEA:
+  allowedHeaders: ["Content-Type", "Authorization", "Accept"], 
 }))
 app.use(express.json());
+
 
 // ✅ Monta rutas correctamente
 app.use('/api/auth', authRoutes); // Esto usará POST /api/auth/login/conductor
