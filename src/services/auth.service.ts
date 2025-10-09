@@ -56,8 +56,7 @@ export const loginAdministrador = async (email: string, password: string) => {
   const token = generarToken({
     uid: usuario._id,
     rol: usuario.rol,
-    nivel: admin.nivel,   // 🔹 ahora incluimos el nivel del admin
-    permisos: admin.permisos // 🔹 se incluyen permisos para el frontend
+    nivel: admin.nivel,   // 🔹 ahora incluimos el nivel del admin// 🔹 se incluyen permisos para el frontend
   });
 
   // 6. Retornar datos completos
@@ -69,9 +68,7 @@ export const loginAdministrador = async (email: string, password: string) => {
       nombres: usuario.datos_personal.nombres,
       apellidos: usuario.datos_personal.apellidos,
       email: usuario.datos_personal.email,
-      area: admin.area,
-      nivel: admin.nivel,
-      permisos: admin.permisos
+      area: admin.area
     }
   };
 };

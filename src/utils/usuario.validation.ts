@@ -9,7 +9,7 @@ export const crearUsuarioSchema = Joi.object({
     nombres: Joi.string().required(),
     apellidos: Joi.string().required(),
     email: Joi.string().email().required(),
-    telefono: Joi.string().optional(),
+    telefono: Joi.string().optional().required(),
     direccion: Joi.string().optional()
   }).required(),
   config_sesion: Joi.object({
@@ -22,8 +22,8 @@ export const crearUsuarioSchema = Joi.object({
     estado_conduct: Joi.string().valid('activo', 'inactivo', 'suspendido'),
     documentos: Joi.array().items(
       Joi.object({
-        nombre: Joi.string().required(),
-        url: Joi.string().uri().required(),
+        nombre: Joi.string().optional(),
+        url: Joi.string().uri().optional(),
         vence: Joi.date().optional()
       })
     ),
