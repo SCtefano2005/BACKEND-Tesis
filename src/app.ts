@@ -46,13 +46,16 @@ app.use('/api/coordenada', coordenadaRoutes);
 io.on("connection", (socket) => {
   console.log("🟢 Cliente conectado:", socket.id);
 
+  // Cliente solicita unirse a un viaje específico
+  socket.on("join_viaje", (viajeId: string) => {
+    socket.join(viajeId);
+    console.log(`📡 Socket ${socket.id} unido al viaje ${viajeId}`);
+  });
+
   socket.on("disconnect", () => {
     console.log("🔴 Cliente desconectado:", socket.id);
   });
 });
-
-// 👉 Inyectamos io en app para usarlo en servicios
-app.set("io", io);
 
 
 // Conexión y servidor
