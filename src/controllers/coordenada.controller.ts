@@ -11,7 +11,6 @@ export const guardarCoordenada = async (req: Request, res: Response): Promise<vo
 
     const coordenada = await coordenadaService.guardarCoordenada(
       req,
-      viajeId,
       esp32_id,
       latitud,
       longitud
