@@ -44,6 +44,23 @@ export const buscarEsp32PorCodigo = async (req: Request, res: Response): Promise
 };
 
 /**
+ * Buscar un ESP32 por código
+ */
+export const buscarEsp32Porid = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const esp32 = await esp32Service.buscarEsp32PorCodigo(id);
+    if (!esp32) {
+      res.status(404).json({ mensaje: "ESP32 no encontrado" });
+      return;
+    }
+    res.json(esp32);
+  } catch (error: any) {
+    res.status(400).json({ mensaje: error.message });
+  }
+};
+
+/**
  * Editar un ESP32 por ID
  */
 export const editarEsp32 = async (req: Request, res: Response): Promise<void> => {

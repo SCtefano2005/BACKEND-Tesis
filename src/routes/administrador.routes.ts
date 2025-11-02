@@ -8,3 +8,5 @@ const router = Router();
 router.post("/administradores" ,registrarUsuarioAdministrador);
 
 export default router;
+
+// tengo que proteger esta ruta, NO OLVIDAR

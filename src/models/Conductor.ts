@@ -19,7 +19,6 @@ export interface IConductor extends Document {
   estado_conduct: 'activo' | 'inactivo' | 'suspendido';
   documentos?: Documento[];
   experiencia?: Experiencia;
-  asignaciones?: Types.ObjectId[];
   creado_en?: Date;
   actualizado?: Date;
 }
@@ -45,7 +44,6 @@ const ConductorSchema = new Schema<IConductor>(
       anios: { type: Number, min: 0, required: true },
       historial: [String],
     },
-    asignaciones: [{ type: Types.ObjectId, ref: 'Viaje' }]
   },
   {
     timestamps: { createdAt: 'creado_en', updatedAt: 'actualizado' },
