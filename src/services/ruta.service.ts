@@ -40,6 +40,19 @@ export const buscarRutas = async (nombre?: string) => {
   }
 };
 
+
+/**
+ * Buscar ruta por ID
+ */
+export const buscarRutaPorId = async (id: string) => {
+  try {
+    const ruta = await Ruta.findById(id);
+    return ruta; // retorna null si no existe
+  } catch (error: any) {
+    throw new Error(`Error al buscar ruta por ID: ${error.message}`);
+  }
+};
+
 /**
  * Eliminar ruta por ID
  */

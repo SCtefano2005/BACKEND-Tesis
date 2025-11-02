@@ -31,6 +31,13 @@ export const buscarBusPorPlaca = async (placa: string): Promise<IBus | null> => 
 };
 
 /**
+ * Buscar un bus por su ID
+ */
+export const buscarBusPorId = async (id: string): Promise<IBus | null> => {
+  return await Bus.findById(id); // findById ya busca por _id
+};
+
+/**
  * Editar bus por placa
  */
 export const editarBus = async (

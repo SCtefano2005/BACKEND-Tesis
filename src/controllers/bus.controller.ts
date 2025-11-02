@@ -27,6 +27,27 @@ export const buscarBusPorPlaca = async (req: Request, res: Response): Promise<vo
   }
 };
 
+/**
+ * Obtener un bus por su ID
+ */
+export const obtenerBusPorId = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const bus = await busService.buscarBusPorId(id);
+
+    if (!bus) {
+      res.status(404).json({ mensaje: '❌ Bus no encontrado' });
+      return;
+    }
+
+    res.status(200).json(bus);
+  } catch (err: any) {
+    console.error('❌ Error al buscar bus por ID:', err);
+    res.status(500).json({ mensaje: err.message || 'Error interno del servidor' });
+  }
+};
+
 // ✅ Editar bus
 export const editarBus = async (req: Request, res: Response): Promise<void> => {
   try {

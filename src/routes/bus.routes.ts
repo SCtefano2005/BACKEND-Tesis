@@ -5,7 +5,8 @@ import {
   crearBus, 
   editarBus, 
   buscarBusPorPlaca, 
-  eliminarBus 
+  eliminarBus,
+  obtenerBusPorId
 } from "../controllers/bus.controller";
 
 const router = Router();
@@ -37,5 +38,10 @@ router.delete(
   authMiddleware(['admin']),
   eliminarBus
 );
-
+// ✅ Buscar bus por ID
+router.get(
+  "/id/:id",
+  authMiddleware(['admin']), // solo admin puede consultar por ID
+  obtenerBusPorId
+);
 export default router;

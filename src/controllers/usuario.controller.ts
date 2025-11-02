@@ -1,6 +1,6 @@
 // src/controllers/usuario.controller.ts
 import { Request, Response } from 'express';
-import { crearUsuarioYConductor, buscarConductorPorDni, editarConductor, eliminarConductor } from '../services/usuario.service';
+import { crearUsuarioYConductor, buscarConductorPorDni, editarConductor, eliminarConductor,obtenerDatosConductorPorId } from '../services/usuario.service';
 
 export const registrarUsuarioConductor = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -23,6 +23,20 @@ export const obtenerConductorPorDni = async (req: Request, res: Response): Promi
     res.status(404).json({ mensaje: (err as Error).message });
   }
 };
+
+
+export const obtenerConductorPorId = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const resumen = await obtenerDatosConductorPorId(id);
+
+    res.status(200).json(resumen);
+  } catch (err) {
+    console.error('❌ Error al buscar conductor por ID:', err);
+    res.status(404).json({ mensaje: (err as Error).message });
+  }
+};
+
 
 // 🔹 Editar conductor por DNI
 export const actualizarConductor = async (req: Request, res: Response): Promise<void> => {

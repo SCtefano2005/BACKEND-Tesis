@@ -21,6 +21,13 @@ interface CrearUsuarioConductorPayload extends Omit<IUsuario, 'password_hash'> {
   };
 }
 
+interface DatosConductorResumen {
+  dni: string;
+  numero_licencia: string;
+  nombre: string;
+
+}
+
 export const crearUsuarioYConductor = async (data: CrearUsuarioConductorPayload) => {
   // 1. Validar duplicados
   const yaExiste = await Usuario.findOne({ identificacion: data.identificacion });
@@ -75,6 +82,29 @@ export const buscarConductorPorDni = async (dni: string) => {
   }
 
   return { usuario, conductor };
+};
+
+
+export const obtenerDatosConductorPorId = async (id: string): Promise<DatosConductorResumen> => {
+  // 1. Buscar usuario por _id
+  const usuario = await Usuario.findById(id).select('identificacion datos_personal');
+  if (!usuario) {
+    throw new Error('Usuario no encontrado');
+  }
+
+  // 2. Buscar conductor asociado
+  const conductor = await Conductor.findOne({ usuario_id: usuario._id }).select('numero_licencia');
+  if (!conductor) {
+    throw new Error('El usuario no tiene datos de conductor asociados');
+  }
+
+  // 3. Retornar solo lo necesario
+  return {
+    dni: usuario.identificacion,
+    numero_licencia: conductor.numero_licencia,
+    nombre: `${usuario.datos_personal?.nombres || ''} ${usuario.datos_personal?.apellidos || ''}`.trim() || 'Sin nombre',
+  };
+
 };
 
 

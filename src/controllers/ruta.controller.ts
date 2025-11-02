@@ -40,6 +40,23 @@ export const buscarRutas = async (req: Request, res: Response) => {
   }
 };
 
+export const buscarRutaPorId = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const ruta = await rutaService.buscarRutaPorId(id);
+
+    if (!ruta) {
+      res.status(404).json({ mensaje: 'Ruta no encontrada' });
+      return;
+    }
+
+    res.status(200).json(ruta);
+  } catch (error: any) {
+    console.error('Error al buscar ruta por ID:', error);
+    res.status(500).json({ mensaje: error.message });
+  }
+};
+
 /**
  * Eliminar ruta por ID
  */
