@@ -46,14 +46,17 @@ export const buscarEsp32PorCodigo = async (req: Request, res: Response): Promise
 /**
  * Buscar un ESP32 por código
  */
-export const buscarEsp32Porid = async (req: Request, res: Response): Promise<void> => {
+
+export const buscarEsp32PorIdCtrl = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
-    const esp32 = await esp32Service.buscarEsp32PorCodigo(id);
+    const { id } = req.params; // Mongo _id
+    const esp32 = await esp32Service.buscarEsp32PorId(id); // servicio que busca por _id
+
     if (!esp32) {
       res.status(404).json({ mensaje: "ESP32 no encontrado" });
       return;
     }
+
     res.json(esp32);
   } catch (error: any) {
     res.status(400).json({ mensaje: error.message });
