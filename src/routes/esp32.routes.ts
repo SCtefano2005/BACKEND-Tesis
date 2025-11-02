@@ -9,6 +9,7 @@ router.post("/crear", authMiddleware(['admin']), crearEsp32);
 router.put("/:id", authMiddleware(["admin"]), editarEsp32);
 router.delete("/:id", authMiddleware(["admin"]), eliminarEsp32);
 router.get("/:codigo", authMiddleware(["admin"]), buscarEsp32PorCodigo);
-router.get("/:id", authMiddleware(["admin"]), buscarEsp32Porid);
+router.get("/byid/:id", authMiddleware(["admin"]), buscarEsp32Porid);
+//aaa
 
 export default router;
