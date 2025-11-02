@@ -8,6 +8,7 @@ import Ruta from '../models/Ruta';
 /**
  * Crear un viaje
  */
+/* Crear un viaje */
 export const crearViaje = async (data: {
   creador_email: string;
   conductor_dni: string;
@@ -18,8 +19,11 @@ export const crearViaje = async (data: {
   fecha_salida: Date;
   fecha_llegada: Date;
 }): Promise<IViaje> => {
-  // 🔎 Buscar admin por email
-  const admin = await Usuario.findOne({ email: data.creador_email, rol: 'admin' });
+  // 🔎 Buscar admin por email dentro de datos_personal
+  const admin = await Usuario.findOne({
+    'datos_personal.email': data.creador_email,
+    rol: 'admin',
+  });
   if (!admin) throw new Error('Administrador no encontrado');
 
   // 🔎 Buscar conductor por DNI
