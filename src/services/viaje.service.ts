@@ -27,7 +27,7 @@ export const crearViaje = async (data: {
   if (!admin) throw new Error('Administrador no encontrado');
 
   // 🔎 Buscar conductor por DNI
-  const usuario = await Usuario.findOne({ dni_conductor: data.conductor_dni });
+  const usuario = await Usuario.findOne({ identificacion: data.conductor_dni });
   if (!usuario) throw new Error('Conductor no encontrado');
 
   // 🔎 Buscar bus por placa
