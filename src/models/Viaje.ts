@@ -25,7 +25,7 @@ const ViajeSchema = new Schema<IViaje>(
     },
     conductor_id: {
       type: Schema.Types.ObjectId,
-      ref: "Conductor",
+      ref: "Usuario",
       required: true,
     },
     bus_id: {
