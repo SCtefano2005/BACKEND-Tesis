@@ -36,6 +36,16 @@ export const buscarEsp32PorCodigo = async (codigo: string): Promise<IEsp32 | nul
 };
 
 /**
+ * Buscar ESP32 por código único
+ */
+export const buscarEsp32PorId = async (id: string): Promise<IEsp32 | null> => {
+  try {
+    return await Esp32.findById(id); // Busca por _id de Mongo
+  } catch (error: any) {
+    throw new Error(`Error al buscar ESP32 por id: ${error.message}`);
+  }
+};
+/**
  * Editar un ESP32 por ID
  */
 export const editarEsp32 = async (id: string, data: Partial<IEsp32>): Promise<IEsp32 | null> => {
