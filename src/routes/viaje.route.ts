@@ -22,6 +22,6 @@ router.get('/bus/:placa', authMiddleware(['admin', 'pasajero']) , cont.buscarVia
 
 // 📌 Buscar viajes por nombre de ruta
 router.get('/ruta/:nombre', authMiddleware(['admin']), cont.buscarViajesPorRuta);
-router.get('/ruta/:id', authMiddleware(['admin']), cont.buscarViajesPorid);
+router.get('/id/:id', authMiddleware(['admin']), cont.buscarViajePorId);
 
 export default router;

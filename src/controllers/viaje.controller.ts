@@ -104,14 +104,24 @@ export const buscarViajesPorRuta = async (req: Request, res: Response): Promise<
 };
 
 /**
- * Buscar viajes por nombre de ruta
+ * Buscar viaje por ID
  */
-export const buscarViajesPorid = async (req: Request, res: Response): Promise<void> => {
+export const buscarViajePorId = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const viajes = await viajeService.buscarViajePorId(id);
-    res.json(viajes);
+    // La variable 'viajes' contendrá un solo objeto, no un array.
+    const viaje = await viajeService.buscarViajePorId(id); 
+    
+    // Si no se encuentra el viaje, se podría devolver 404
+    if (!viaje) {
+      res.status(404).json({ mensaje: 'Viaje no encontrado.' });
+      return;
+    }
+    
+    res.json(viaje); // Usar 'viaje' en singular es más claro.
   } catch (error: any) {
-    res.status(400).json({ mensaje: error.message });
+    // Es mejor usar 500 para errores de servidor (conexión/lógica) y no 400,
+    // a menos que sepas que el ID de entrada es inválido (ej. formato).
+    res.status(500).json({ mensaje: 'Error al buscar el viaje.', detalle: error.message });
   }
 };
