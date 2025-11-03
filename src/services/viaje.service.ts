@@ -80,10 +80,10 @@ export const eliminarViaje = async (id: string): Promise<boolean> => {
  * Buscar viajes por DNI de conductor
  */
 export const buscarViajesPorConductor = async (dni: string): Promise<IViaje[]> => {
-  const conductor = await Conductor.findOne({ numero_licencia: dni });
-  if (!conductor) throw new Error('Conductor no encontrado');
+  const usuario = await Usuario.findOne({ identificacion: dni });
+  if (!usuario) throw new Error('Conductor no encontrado');
 
-  return await Viaje.find({ conductor_id: conductor._id })
+  return await Viaje.find({ conductor_id: usuario._id })
     .populate('conductor_id')
     .populate('bus_id')
     .populate('ruta_id')

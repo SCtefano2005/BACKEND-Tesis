@@ -102,3 +102,16 @@ export const buscarViajesPorRuta = async (req: Request, res: Response): Promise<
     res.status(400).json({ mensaje: error.message });
   }
 };
+
+/**
+ * Buscar viajes por nombre de ruta
+ */
+export const buscarViajesPorid = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const viajes = await viajeService.buscarViajePorId(id);
+    res.json(viajes);
+  } catch (error: any) {
+    res.status(400).json({ mensaje: error.message });
+  }
+};
