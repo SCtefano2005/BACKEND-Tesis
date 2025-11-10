@@ -197,3 +197,22 @@ export const buscarViajesEnCursoPorDNI = async (dni: string) => {
     throw error;
   }
 };
+
+export const cambiarEstadoViajeConductor = async (id_viaje: string, nuevoEstado: string) => {
+  try {
+    const viajeActualizado = await Viaje.findByIdAndUpdate(
+      id_viaje,
+      { estado: nuevoEstado, actualizado: new Date() },
+      { new: true } // Devuelve el documento actualizado
+    ).populate('conductor_id', 'datos_personal')
+     .populate('bus_id')
+     .populate('ruta_id')
+     .populate('creado_por', 'datos_personal')
+     .exec();
+
+    return viajeActualizado;
+  } catch (error) {
+    console.error('Error al cambiar el estado del viaje:', error);
+    throw error;
+  }
+};

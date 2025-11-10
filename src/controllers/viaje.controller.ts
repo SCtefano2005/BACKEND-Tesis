@@ -1,6 +1,7 @@
 // src/controllers/viaje.controller.ts
 import { Request, Response } from 'express';
-import * as viajeService from '../services/viaje.service';
+import viajeService = require('../services/viaje.service');
+
 
 /**
  * Crear un viaje
