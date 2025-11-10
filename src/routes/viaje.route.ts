@@ -24,4 +24,8 @@ router.get('/bus/:placa', authMiddleware(['admin', 'pasajero']) , cont.buscarVia
 router.get('/ruta/:nombre', authMiddleware(['admin']), cont.buscarViajesPorRuta);
 router.get('/id/:id', authMiddleware(['admin']), cont.buscarViajePorId);
 
+// Buscar viajes por DNI y tipo (pendiente o curso)
+router.get('/conductor/:dni/:tipo', authMiddleware(['conductor']), cont.getViajesPorDNI);
+router.post('/cambiar-estado', authMiddleware(['conductor']),cont.cambiarEstadoViajeConductor);
+
 export default router;

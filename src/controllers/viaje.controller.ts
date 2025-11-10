@@ -125,3 +125,60 @@ export const buscarViajePorId = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ mensaje: 'Error al buscar el viaje.', detalle: error.message });
   }
 };
+
+/**
+ * Buscar viajes pendientes o en curso según el DNI del conductor
+ */
+export const getViajesPorDNI = async (req: Request, res: Response): Promise<void> => {
+  const { dni, tipo } = req.params; // tipo = 'pendiente' o 'curso'
+
+  try {
+    let viajes;
+
+    if (tipo === 'pendiente') {
+      viajes = await viajeService.buscarViajesPendientesPorDNI(dni);
+    } else if (tipo === 'curso') {
+      viajes = await viajeService.buscarViajesEnCursoPorDNI(dni);
+    } else {
+      res.status(400).json({ mensaje: 'Tipo inválido. Use "pendiente" o "curso".' });
+      return;
+    }
+
+    res.status(200).json(viajes);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(500).json({ mensaje: error.message });
+    } else {
+      res.status(500).json({ mensaje: 'Error desconocido en la búsqueda de viajes.' });
+    }
+  }
+};
+
+export const cambiarEstadoViajeConductor = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id_viaje, estado } = req.body;
+
+    if (!id_viaje || !estado) {
+      res.status(400).json({ mensaje: 'Debe enviar id_viaje y el nuevo estado.' });
+      return;
+    }
+
+    const viajeActualizado = await viajeService.cambiarEstadoViajeConductor(id_viaje, estado);
+
+    if (!viajeActualizado) {
+      res.status(404).json({ mensaje: 'Viaje no encontrado.' });
+      return;
+    }
+
+    res.status(200).json({
+      mensaje: `Estado del viaje actualizado a "${estado}" correctamente.`,
+      viaje: viajeActualizado,
+    });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      res.status(500).json({ mensaje: error.message });
+    } else {
+      res.status(500).json({ mensaje: 'Error desconocido al cambiar el estado del viaje.' });
+    }
+  }
+};

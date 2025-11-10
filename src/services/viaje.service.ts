@@ -139,3 +139,61 @@ export const buscarViajePorId = async (id: string) => {
     .populate('ruta_id')
     .populate('creado_por');
 };
+
+/**
+ * Busca los viajes con estado "pendiente" de un conductor según su DNI.
+ */
+export const buscarViajesPendientesPorDNI = async (dni: string) => {
+  try {
+    // Buscar al conductor por su identificación
+    const conductor = await Usuario.findOne({ identificacion: dni, rol: 'conductor' });
+
+    if (!conductor) {
+      throw new Error('No se encontró un conductor con ese DNI.');
+    }
+
+    // Buscar los viajes pendientes de ese conductor
+    const viajesPendientes = await Viaje.find({
+      conductor_id: conductor._id,
+      estado: 'pendiente'
+    })
+      .populate('bus_id')
+      .populate('ruta_id')
+      .populate('conductor_id', 'datos_personal')
+      .populate('creado_por', 'datos_personal')
+      .exec();
+
+    return viajesPendientes;
+  } catch (error) {
+    console.error('Error al buscar viajes pendientes:', error);
+    throw error;
+  }
+};
+
+/**
+ * Busca los viajes con estado "en curso" de un conductor según su DNI.
+ */
+export const buscarViajesEnCursoPorDNI = async (dni: string) => {
+  try {
+    const conductor = await Usuario.findOne({ identificacion: dni, rol: 'conductor' });
+
+    if (!conductor) {
+      throw new Error('No se encontró un conductor con ese DNI.');
+    }
+
+    const viajesEnCurso = await Viaje.find({
+      conductor_id: conductor._id,
+      estado: 'en curso'
+    })
+      .populate('bus_id')
+      .populate('ruta_id')
+      .populate('conductor_id', 'datos_personal')
+      .populate('creado_por', 'datos_personal')
+      .exec();
+
+    return viajesEnCurso;
+  } catch (error) {
+    console.error('Error al buscar viajes en curso:', error);
+    throw error;
+  }
+};
