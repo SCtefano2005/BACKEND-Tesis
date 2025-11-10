@@ -183,7 +183,7 @@ export const buscarViajesEnCursoPorDNI = async (dni: string) => {
 
     const viajesEnCurso = await Viaje.find({
       conductor_id: conductor._id,
-      estado: 'en curso'
+      estado: 'en-curso'
     })
       .populate('bus_id')
       .populate('ruta_id')
