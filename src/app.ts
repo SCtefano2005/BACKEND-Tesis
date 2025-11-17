@@ -12,6 +12,7 @@ import viajeRoutes from './routes/viaje.route';
 import busRoutes from './routes/bus.routes';
 import coordenadaRoutes from './routes/coordenada.routes';
 import esp32Routes from './routes/esp32.routes';
+import incidenteRoutes from './routes/Incidente.routes'
 import { connectToMongo } from './database/mongo';
 
 const app = express();
@@ -46,6 +47,7 @@ app.use('/api/viaje', viajeRoutes);
 app.use('/api/bus', busRoutes);
 app.use('/api/coordenada', coordenadaRoutes);
 app.use('/api/esp32', esp32Routes);
+app.use('/api/incidente', incidenteRoutes);
 
 // ✅ WebSocket (Socket.IO)
 io.on("connection", (socket) => {

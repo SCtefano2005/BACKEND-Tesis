@@ -4,6 +4,8 @@ import Conductor from '../models/Conductor';
 import Usuario from '../models/Usuario';
 import Bus from '../models/Bus';
 import Ruta from '../models/Ruta';
+import { CreateViaje, EditViaje, CambiarStatus } from '../Responses/Viajes/Viaje'
+
 
 /**
  * Crear un viaje
@@ -18,7 +20,7 @@ export const crearViaje = async (data: {
   destino: string;
   fecha_salida: Date;
   fecha_llegada: Date;
-}): Promise<IViaje> => {
+}): Promise<CreateViaje> => {
   // 🔎 Buscar admin por email dentro de datos_personal
   const admin = await Usuario.findOne({
     'datos_personal.email': data.creador_email,
@@ -51,7 +53,9 @@ export const crearViaje = async (data: {
     estado: 'pendiente',
   });
 
-  return await viaje.save();
+  return {
+    mensaje: "Viaje creado exitosamente"
+  };
 };
 
 /**
@@ -60,12 +64,24 @@ export const crearViaje = async (data: {
 export const editarViaje = async (
   id: string,
   data: Partial<IViaje>
-): Promise<IViaje | null> => {
-  return await Viaje.findByIdAndUpdate(id, data, { new: true })
-    .populate('conductor_id')
-    .populate('bus_id')
-    .populate('ruta_id')
-    .populate('creado_por');
+): Promise<EditViaje> => {
+  try {
+    const viajeActualizado = await Viaje.findByIdAndUpdate(id, data, { new: true })
+      .populate('conductor_id')
+      .populate('bus_id')
+      .populate('ruta_id')
+      .populate('creado_por');
+
+    if (!viajeActualizado) {
+      throw new Error("Viaje no encontrado");
+    }
+
+    return {
+      mensaje: "Viaje Editado Correctamente"
+    };
+  } catch (error) {
+    throw new Error("Error al editar el viaje: " + error);
+  }
 };
 
 /**
@@ -198,21 +214,35 @@ export const buscarViajesEnCursoPorDNI = async (dni: string) => {
   }
 };
 
-export const cambiarEstadoViajeConductor = async (id_viaje: string, nuevoEstado: string) => {
+export const cambiarEstadoViajeConductor = async (
+  id_viaje: string,
+  nuevoEstado: string
+): Promise<CambiarStatus> => {
   try {
     const viajeActualizado = await Viaje.findByIdAndUpdate(
       id_viaje,
-      { estado: nuevoEstado, actualizado: new Date() },
-      { new: true } // Devuelve el documento actualizado
-    ).populate('conductor_id', 'datos_personal')
-     .populate('bus_id')
-     .populate('ruta_id')
-     .populate('creado_por', 'datos_personal')
-     .exec();
+      {
+        estado: nuevoEstado,
+        actualizado: new Date()
+      },
+      { new: true }
+    )
+      .populate('conductor_id', 'datos_personal')
+      .populate('bus_id')
+      .populate('ruta_id')
+      .populate('creado_por', 'datos_personal')
+      .exec();
 
-    return viajeActualizado;
-  } catch (error) {
-    console.error('Error al cambiar el estado del viaje:', error);
-    throw error;
+    if (!viajeActualizado) {
+      throw new Error("Viaje no encontrado");
+    }
+
+    return {
+      mensaje: `Estado actualizado a "${nuevoEstado}" correctamente`
+    };
+
+  } catch (error: any) {
+    throw new Error("Error al cambiar el estado del viaje: " + error.message);
   }
 };
+
