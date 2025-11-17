@@ -10,7 +10,6 @@ import { CreateViaje, EditViaje, CambiarStatus } from '../Responses/Viajes/Viaje
 /**
  * Crear un viaje
  */
-/* Crear un viaje */
 export const crearViaje = async (data: {
   creador_email: string;
   conductor_dni: string;
@@ -21,27 +20,28 @@ export const crearViaje = async (data: {
   fecha_salida: Date;
   fecha_llegada: Date;
 }): Promise<CreateViaje> => {
-  // 🔎 Buscar admin por email dentro de datos_personal
+
+  // Buscar admin
   const admin = await Usuario.findOne({
     'datos_personal.email': data.creador_email,
     rol: 'admin',
   });
   if (!admin) throw new Error('Administrador no encontrado');
 
-  // 🔎 Buscar conductor por DNI
+  // Buscar conductor
   const usuario = await Usuario.findOne({ identificacion: data.conductor_dni });
   if (!usuario) throw new Error('Conductor no encontrado');
 
-  // 🔎 Buscar bus por placa
+  // Buscar bus
   const bus = await Bus.findOne({ placa: data.bus_placa });
   if (!bus) throw new Error('Bus no encontrado');
 
-  // 🔎 Buscar ruta por nombre
+  // Buscar ruta
   const ruta = await Ruta.findOne({ nombre: data.ruta_nombre });
   if (!ruta) throw new Error('Ruta no encontrada');
 
-  // 🚍 Crear viaje
-  const viaje = new Viaje({
+  // Crear viaje
+  const viaje = await new Viaje({
     creado_por: admin._id,
     conductor_id: usuario._id,
     bus_id: bus._id,
@@ -51,11 +51,16 @@ export const crearViaje = async (data: {
     fecha_salida: data.fecha_salida,
     fecha_llegada: data.fecha_llegada,
     estado: 'pendiente',
-  });
+  }).save();
 
-  return {
-    mensaje: "Viaje creado exitosamente"
-  };
+  // Devolver viaje populado
+  const viajeCompleto = await Viaje.findById(viaje._id)
+    .populate('conductor_id')
+    .populate('bus_id')
+    .populate('ruta_id')
+    .populate('creado_por');
+
+  return viajeCompleto as any;
 };
 
 /**
@@ -65,24 +70,20 @@ export const editarViaje = async (
   id: string,
   data: Partial<IViaje>
 ): Promise<EditViaje> => {
-  try {
-    const viajeActualizado = await Viaje.findByIdAndUpdate(id, data, { new: true })
-      .populate('conductor_id')
-      .populate('bus_id')
-      .populate('ruta_id')
-      .populate('creado_por');
 
-    if (!viajeActualizado) {
-      throw new Error("Viaje no encontrado");
-    }
+  const viajeActualizado = await Viaje.findByIdAndUpdate(id, data, { new: true })
+    .populate('conductor_id')
+    .populate('bus_id')
+    .populate('ruta_id')
+    .populate('creado_por');
 
-    return {
-      mensaje: "Viaje Editado Correctamente"
-    };
-  } catch (error) {
-    throw new Error("Error al editar el viaje: " + error);
+  if (!viajeActualizado) {
+    throw new Error("Viaje no encontrado");
   }
+
+  return viajeActualizado as any;
 };
+
 
 /**
  * Eliminar un viaje
