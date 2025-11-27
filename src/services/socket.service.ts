@@ -1,59 +1,89 @@
-// src/socket.ts
-import { Server } from "socket.io";
-import Coordenada from "../models/Coordenada";
+import WebSocket from "ws";
+import Esp32 from "../models/Esp32";
 import Viaje from "../models/Viaje";
+import Coordenada from "../models/Coordenada";
 
-export const socketHandler = (io: Server) => {
-  io.on("connection", (socket) => {
-    console.log("🟢 Cliente conectado:", socket.id);
+export const initGpsWebSocket = (server: any) => {
+  const wss = new WebSocket.Server({ server });
 
-    // 📍 Cuando el conductor envía su ubicación
-    socket.on("enviar_coordenada", async (data) => {
-      const { viajeId, latitud, longitud } = data;
+  const esp32Cache = new Map<string, any>();
+  let viajeCache: any = null;
+  let lastViajeCheck = 0;
 
-      if (!viajeId || latitud == null || longitud == null) {
-        console.warn("⚠️ Datos incompletos:", data);
-        return;
-      }
+  wss.on("connection", (ws) => {
+    console.log("🟢 Cliente conectado (ESP32 / Frontend)");
 
+    let lastMessageTime = 0;
+
+    ws.on("message", async (msg) => {
       try {
-        // 1️⃣ Verificar si el viaje está en curso
-        const viaje = await Viaje.findById(viajeId);
-        if (!viaje || viaje.estado !== "en_curso") {
-          console.log(`🚫 Viaje ${viajeId} no está en curso`);
-          return;
+        const now = Date.now();
+        if (now - lastMessageTime < 800) return; // Anti-flood (1 msg cada 800ms)
+        lastMessageTime = now;
+
+        const data = JSON.parse(msg.toString());
+        const { codigo_esp32, latitud, longitud } = data;
+
+        if (!codigo_esp32 || latitud == null || longitud == null) return;
+
+        /* ---------------- CACHE ESP32 ---------------- */
+        let esp32 = esp32Cache.get(codigo_esp32);
+
+        if (!esp32) {
+          esp32 = await Esp32.findOne({ codigo: codigo_esp32 });
+          if (!esp32) {
+            console.log("❌ ESP32 no registrado:", codigo_esp32);
+            return;
+          }
+          esp32Cache.set(codigo_esp32, esp32);
         }
 
-        // 2️⃣ Guardar coordenada
-        const coordenada = new Coordenada({
-          viajeId,
+        /* ---------------- CACHE VIAJE ACTIVO ---------------- */
+        const nowTime = Date.now();
+
+        if (!viajeCache || nowTime - lastViajeCheck > 5000) {
+          viajeCache = await Viaje.findOne({ estado: "en_curso" });
+          lastViajeCheck = nowTime;
+        }
+
+        if (!viajeCache) return;
+
+        /* ---------------- GUARDAR COORDENADA ---------------- */
+        const registro = await Coordenada.create({
+          viajeId: viajeCache._id,
+          esp32Id: esp32._id,
           latitud,
           longitud,
-        });
-        await coordenada.save();
-
-        // 3️⃣ Emitir a todos los clientes conectados al viaje
-        io.to(viajeId.toString()).emit("coordenada", {
-          viajeId,
-          latitud,
-          longitud,
-          timestamp: coordenada.timestamp,
+          timestamp: new Date()
         });
 
-        console.log(`✅ Coordenada guardada y enviada (${latitud}, ${longitud})`);
-      } catch (err) {
-        console.error("❌ Error al guardar coordenada:", err);
+        /* ---------------- STREAM A TODOS ---------------- */
+        const payload = JSON.stringify({
+          tipo: "gps_update",
+          data: {
+            codigo_esp32,
+            latitud,
+            longitud,
+            viajeId: viajeCache._id,
+            timestamp: registro.timestamp
+          }
+        });
+
+        wss.clients.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(payload);
+          }
+        });
+
+      } catch (error) {
+        console.error("❌ Error GPS WebSocket:", error);
       }
     });
 
-    // 👥 Los clientes (por ejemplo, los supervisores o pasajeros) se unen al viaje
-    socket.on("unirse_viaje", (viajeId) => {
-      socket.join(viajeId);
-      console.log(`👥 Cliente ${socket.id} unido al viaje ${viajeId}`);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("🔴 Cliente desconectado:", socket.id);
+    ws.on("close", () => {
+      console.log("🔴 Cliente desconectado");
     });
   });
+
+  console.log("✅ WebSocket GPS optimizado iniciado");
 };

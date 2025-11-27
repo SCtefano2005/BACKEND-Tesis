@@ -1,73 +1,77 @@
 // src/server.ts
-import express from 'express';
-import http from 'http';
+import express from "express";
+import http from "http";
 import cors from "cors";
-import { Server } from 'socket.io';
+import { Server as IOServer } from "socket.io";
+import { initGpsWebSocket } from "./services/socket.service";
 
-import authRoutes from './routes/auth.routes';
-import usuarioRoutes from './routes/usuario.routes';
-import administradorRoutes from './routes/administrador.routes';
-import rutaRoutes from './routes/ruta.routes';
-import viajeRoutes from './routes/viaje.route';
-import busRoutes from './routes/bus.routes';
-import coordenadaRoutes from './routes/coordenada.routes';
-import esp32Routes from './routes/esp32.routes';
-import incidenteRoutes from './routes/Incidente.routes'
-import { connectToMongo } from './database/mongo';
+import authRoutes from "./routes/auth.routes";
+import usuarioRoutes from "./routes/usuario.routes";
+import administradorRoutes from "./routes/administrador.routes";
+import rutaRoutes from "./routes/ruta.routes";
+import viajeRoutes from "./routes/viaje.route";
+import busRoutes from "./routes/bus.routes";
+import coordenadaRoutes from "./routes/coordenada.routes";
+import esp32Routes from "./routes/esp32.routes";
+import incidenteRoutes from "./routes/Incidente.routes";
+import { connectToMongo } from "./database/mongo";
 
 const app = express();
-const server = http.createServer(app); // ✅ Necesario para Socket.IO
-const io = new Server(server, {
-  cors: {
-    origin: "*", // ⚠️ Cambia esto a tu dominio Flutter en producción
-    methods: ["GET", "POST"],
-  },
+const server = http.createServer(app);
+
+// ✅ Socket.IO SOLO para Flutter/App
+const io = new IOServer(server, {
+  cors: { origin: "*" }
 });
 
 const PORT = 3000;
 
-// ✅ Middlewares
+/* ===================== MIDDLEWARES ===================== */
 app.use(cors({
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+  credentials: true
 }));
 app.use(express.json());
 
-// ✅ Guardamos `io` en la app (para usarlo en controladores)
+// ✅ Hacemos accesible Socket.IO en toda la app
 app.set("io", io);
 
-// ✅ Rutas
-app.use('/api/auth', authRoutes);
-app.use('/api/conductor', usuarioRoutes);
-app.use('/api/administrador', administradorRoutes);
-app.use('/api/rutas', rutaRoutes);
-app.use('/api/viaje', viajeRoutes);
-app.use('/api/bus', busRoutes);
-app.use('/api/coordenada', coordenadaRoutes);
-app.use('/api/esp32', esp32Routes);
-app.use('/api/incidente', incidenteRoutes);
+/* ===================== RUTAS ===================== */
+app.use("/api/auth", authRoutes);
+app.use("/api/conductor", usuarioRoutes);
+app.use("/api/administrador", administradorRoutes);
+app.use("/api/rutas", rutaRoutes);
+app.use("/api/viaje", viajeRoutes);
+app.use("/api/bus", busRoutes);
+app.use("/api/coordenada", coordenadaRoutes);
+app.use("/api/esp32", esp32Routes);
+app.use("/api/incidente", incidenteRoutes);
 
-// ✅ WebSocket (Socket.IO)
+/* ===================== WEBSOCKETS ===================== */
+
+// ✅ WebSocket NATIVO -> ESP32
+initGpsWebSocket(server);
+
+// ✅ Socket.IO -> Flutter / App
 io.on("connection", (socket) => {
-  console.log("🟢 Cliente conectado:", socket.id);
+  console.log(`📲 App conectada: ${socket.id}`);
 
-  // Cliente se une a un viaje
   socket.on("join_viaje", (viajeId: string) => {
     socket.join(viajeId);
-    console.log(`📡 Socket ${socket.id} unido al viaje ${viajeId}`);
+    console.log(`📡 App ${socket.id} unida al viaje ${viajeId}`);
   });
 
-  // Cliente desconectado
   socket.on("disconnect", () => {
-    console.log("🔴 Cliente desconectado:", socket.id);
+    console.log(`🔴 App desconectada: ${socket.id}`);
   });
 });
 
-// ✅ Conectar a MongoDB y arrancar servidor HTTP (no app.listen)
+/* ===================== START SERVER ===================== */
 connectToMongo().then(() => {
   server.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`🚀 Servidor activo en http://localhost:${PORT}`);
+    console.log("✅ WebSocket ESP32 listo");
+    console.log("✅ Socket.IO Flutter listo");
   });
 });
