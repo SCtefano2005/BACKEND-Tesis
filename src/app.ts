@@ -3,7 +3,8 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import { Server as IOServer } from "socket.io";
-import { initGpsWebSocket } from "./services/socket.service";
+import Coordenada from "./models/Coordenada";
+
 
 import authRoutes from "./routes/auth.routes";
 import usuarioRoutes from "./routes/usuario.routes";
@@ -48,18 +49,41 @@ app.use("/api/coordenada", coordenadaRoutes);
 app.use("/api/esp32", esp32Routes);
 app.use("/api/incidente", incidenteRoutes);
 
-/* ===================== WEBSOCKETS ===================== */
 
-// ✅ WebSocket NATIVO -> ESP32
-initGpsWebSocket(server);
 
 // ✅ Socket.IO -> Flutter / App
 io.on("connection", (socket) => {
   console.log(`📲 App conectada: ${socket.id}`);
 
-  socket.on("join_viaje", (viajeId: string) => {
-    socket.join(viajeId);
-    console.log(`📡 App ${socket.id} unida al viaje ${viajeId}`);
+socket.on("join_viaje", async (viajeId: string) => {
+  socket.join(viajeId);
+  console.log(`📡 App ${socket.id} unida al viaje ${viajeId}`);
+
+  // Buscar la última coordenada de ese viaje
+  const ultimaCoordenada = await Coordenada.findOne({ viajeId })
+    .sort({ timestamp: -1 })
+    .limit(1);
+
+  if (ultimaCoordenada) {
+    // Enviar solo al socket que se acaba de unir
+    socket.emit("coordenada", {
+      viajeId,
+      esp32Id: ultimaCoordenada.esp32Id,
+      latitud: ultimaCoordenada.latitud,
+      longitud: ultimaCoordenada.longitud,
+      timestamp: ultimaCoordenada.timestamp,
+    });
+  }
+});
+
+  socket.on("set_rol", (rol: string) => {
+    if (rol === "admin") {
+      socket.join("admin");
+      console.log(`✅ Cliente ${socket.id} unido a la sala admin`);
+    } else {
+      console.log(`❌ Cliente ${socket.id} intentó unirse con rol ${rol}, no permitido`);
+      socket.disconnect(); // opcional: puedes desconectar o simplemente ignorar
+    }
   });
 
   socket.on("disconnect", () => {

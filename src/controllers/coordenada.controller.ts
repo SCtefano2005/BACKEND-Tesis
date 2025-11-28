@@ -7,7 +7,7 @@ import * as coordenadaService from "../services/coordenada.service";
  */
 export const guardarCoordenada = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { viajeId, esp32_id, latitud, longitud } = req.body;
+    const { esp32_id, latitud, longitud } = req.body;
 
     const coordenada = await coordenadaService.guardarCoordenada(
       req,
