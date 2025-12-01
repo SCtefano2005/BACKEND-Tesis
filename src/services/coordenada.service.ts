@@ -21,10 +21,18 @@ export const guardarCoordenada = async (
   const esp32 = await Esp32.findOne({
     codigo: esp32_id,
   });
+  if (!esp32) {
+    console.error('No existe el esp32 ');
+    return null;
+  }
   // Busca el bus con el campo _id obtenido del objeto esp32
   const bus = await Bus.findOne({
     esp32_id: esp32?._id.toString()
-  })
+  });
+  if (!bus) {
+    console.error('No hay ningun bus asociado a ese esp32');
+    return null;
+  }
 
   // 2️⃣ Buscar si ese bus tiene un viaje en curso
   const viaje = await Viaje.findOne({
@@ -40,7 +48,7 @@ export const guardarCoordenada = async (
   // 3️⃣ Guardar la coordenada
   const coordenada = new Coordenada({
     viajeId: viaje._id,
-    esp32Id: esp32_id,
+    esp32Id: esp32._id,
     latitud,
     longitud,
   });
