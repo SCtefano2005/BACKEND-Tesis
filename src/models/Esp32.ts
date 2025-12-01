@@ -1,7 +1,8 @@
 // src/models/Esp32.ts
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 
 export interface IEsp32 extends Document {
+  _id: Types.ObjectId; 
   codigo: string;        // 🔹 Identificador único (MAC address, serial o token del ESP32)
   descripcion?: string;  // Ej. "ESP32 asignado al Bus 1"
   activo: boolean;       // Estado del dispositivo
