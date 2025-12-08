@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import viajeService = require('../services/viaje.service');
 
 
+
 /**
  * Crear un viaje
  */
@@ -53,17 +54,7 @@ export const eliminarViaje = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-/**
- * Listar todos los viajes
- */
-export const listarViajes = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const viajes = await viajeService.listarViajes();
-    res.json(viajes);
-  } catch (error: any) {
-    res.status(400).json({ mensaje: error.message });
-  }
-};
+
 
 /**
  * Buscar viajes por DNI de conductor
@@ -181,5 +172,45 @@ export const cambiarEstadoViajeConductor = async (req: Request, res: Response): 
     } else {
       res.status(500).json({ mensaje: 'Error desconocido al cambiar el estado del viaje.' });
     }
+  }
+
+
+};
+
+export const listarViajes = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const viajes = await viajeService.listarViajes();
+
+    if (!viajes || viajes.length === 0) {
+      res.status(404).json({ mensaje: "No se encontraron viajes." });
+      return;
+    }
+
+    res.status(200).json(viajes);
+  } catch (error: any) {
+    console.error("Error al listar viajes:", error);
+    res.status(500).json({
+      mensaje: "Error interno del servidor al listar viajes.",
+      detalle: error.message,
+    });
+  }
+};
+
+export const obtenerViajesEnCurso = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const viajes = await viajeService.listarViajeEnCurso(); // ahora sí desde el service
+
+    if (!viajes || viajes.length === 0) {
+      res.status(404).json({ mensaje: "No hay viajes en curso" });
+      return;
+    }
+
+    res.status(200).json(viajes);
+  } catch (error: any) {
+    console.error("Error al obtener viajes en curso:", error);
+    res.status(500).json({
+      mensaje: "Error interno del servidor",
+      detalle: error.message,
+    });
   }
 };

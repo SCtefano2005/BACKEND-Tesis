@@ -28,4 +28,7 @@ router.get('/id/:id', authMiddleware(['admin']), cont.buscarViajePorId);
 router.get('/conductores/:dni/:tipo', authMiddleware(['conductor']), cont.getViajesPorDNI);
 router.post('/cambiar-estado', authMiddleware(['conductor']),cont.cambiarEstadoViajeConductor);
 
+router.get('/leaflet', authMiddleware(['admin']), cont.obtenerViajesEnCurso);
+router.get('/todos', authMiddleware(['admin']), cont.listarViajes);
+
 export default router;

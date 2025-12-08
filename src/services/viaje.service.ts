@@ -91,6 +91,7 @@ export const eliminarViaje = async (id: string): Promise<boolean> => {
   return !!result;
 };
 
+
 /**
  * Buscar viajes por DNI de conductor
  */
@@ -143,6 +144,22 @@ export const listarViajes = async () => {
     .populate('ruta_id')
     .populate('creado_por');
 };
+
+export const listarViajeEnCurso = async () => {
+  try {
+    const viajes = await Viaje.find({ estado: "en-curso" })
+      .populate("conductor_id")
+      .populate("bus_id")
+      .populate("ruta_id")
+      .populate("creado_por");
+
+    return viajes;
+  } catch (error) {
+    console.error("Error al listar viajes en curso:", error);
+    throw error;
+  }
+};
+
 
 /**
  * Buscar viaje por ID
