@@ -55,9 +55,9 @@ export const obtenerIncidenteporId = async (id: string) => {
 
 
 
-export const actualizarestado = async (id_incidente: string, estado: string) => {
+export const actualizarestado = async (id: string, estado: string) => {
   try{
-    const IncidenteActualizado = await Incidente.findByIdAndUpdate(id_incidente, { estado: estado }, {new : true});
+    const IncidenteActualizado = await Incidente.findByIdAndUpdate(id, { estado: estado }, {new : true});
     if (!IncidenteActualizado) {
       throw new Error("Incidente no encontrado");
     }
