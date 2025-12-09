@@ -64,17 +64,16 @@ export const eliminarIncidenteController = async (req: Request, res: Response) =
 
 
 // Obtener incidente por ID
-export const obtenerIncidenteporIdController = async (req: Request, res: Response) => {
+export const obtenerIncidenteporIdController = async (req : Request, res: Response) => {
   try {
-    const { id_incidente } = req.params;
-
-    const incidente = await obtenerIncidenteporId(id_incidente);
-
-    res.status(200).json(incidente); // devuelve el documento completo
+    console.log("ID recibido:", req.params.id); // 👈 imprime el ID
+    const incidente = await obtenerIncidenteporId(req.params.id);
+    res.json(incidente);
   } catch (error: any) {
     res.status(404).json({ error: error.message });
   }
 };
+
 // Actualizar estado de un incidente
 export const actualizarEstadoController = async (req: Request, res: Response) => {
   try {
