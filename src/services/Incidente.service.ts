@@ -48,9 +48,10 @@ export const obtenerIncidenteporId = async (id_incidente: string) => {
     return incidente; // devuelve el documento completo con todos los campos y metadatos
   } catch (error: any) {
     console.error("Error al buscar incidente:", error);
-    throw new Error(error.message);
+    throw new Error("Error al buscar incidente: " + error.message);
   }
 };
+
 
 
 
