@@ -16,7 +16,7 @@ export interface IIncidente extends Document {
 const IncidenteSchema = new Schema<IIncidente>({
     UsuarioConductorID: { 
         type: Schema.Types.ObjectId, 
-        ref: "Usuarios", 
+        ref: "Usuario", 
         required: true,
         index: true
     },
