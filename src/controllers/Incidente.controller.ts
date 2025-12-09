@@ -77,10 +77,10 @@ export const obtenerIncidenteporIdController = async (req : Request, res: Respon
 // Actualizar estado de un incidente
 export const actualizarEstadoController = async (req: Request, res: Response) => {
   try {
-    const { id_incidente } = req.params;
+    const { id } = req.body;
     const { estado } = req.body;
 
-    const resultado = await actualizarestado(id_incidente, estado);
+    const resultado = await actualizarestado(id, estado);
 
     res.status(200).json(resultado); // devuelve mensaje de confirmación
   } catch (error: any) {

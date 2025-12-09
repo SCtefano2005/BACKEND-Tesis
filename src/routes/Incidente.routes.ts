@@ -13,6 +13,6 @@ router.get("/", authMiddleware(["admin"]), obtenerIncidentesController);
 router.get("/conductor/:dni", authMiddleware(["admin", "conductor"]), obtenerIncidentesPorConductorController);
 router.delete("/:id", authMiddleware(["admin"]), eliminarIncidenteController);
 router.get("/get/:id", authMiddleware(["admin"]), obtenerIncidenteporIdController);
-router.put("/cambiarestado/:id", authMiddleware(["admin"]), actualizarEstadoController);
+router.post("/cambiarestado", authMiddleware(["admin"]), actualizarEstadoController);
 
 export default router;
