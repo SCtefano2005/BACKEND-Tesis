@@ -36,9 +36,9 @@ export const crearIncidente = async (data: CrearIncidenteData): Promise<Incident
 };
 
 
-export const obtenerIncidenteporId = async (id_incidente: string) => {
+export const obtenerIncidenteporId = async (id: string) => {
   try {
-    const incidente = await Incidente.findById(id_incidente)
+    const incidente = await Incidente.findById(id)
       .populate("UsuarioConductorID"); // trae el documento del usuario relacionado
 
     if (!incidente) {
