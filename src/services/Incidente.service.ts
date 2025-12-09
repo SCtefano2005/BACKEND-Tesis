@@ -56,19 +56,33 @@ export const obtenerIncidenteporId = async (id: string) => {
 
 
 export const actualizarestado = async (id: string, estado: string) => {
-  try{
-    const IncidenteActualizado = await Incidente.findByIdAndUpdate(id, { estado: estado }, {new : true});
-    if (!IncidenteActualizado) {
+  try {
+    // Validar estado antes de actualizar
+    const estadosValidos = ["Pendiente", "Revisado", "Solucionado"];
+    if (!estadosValidos.includes(estado)) {
+      throw new Error(`Estado inválido: ${estado}`);
+    }
+
+    const incidenteActualizado = await Incidente.findByIdAndUpdate(
+      id,
+      { estado },
+      { new: true }
+    );
+
+    if (!incidenteActualizado) {
       throw new Error("Incidente no encontrado");
     }
+
     return {
-      mensaje: "Se cambio el estado satisfactoriamente"
+      mensaje: "Se cambió el estado satisfactoriamente",
+      incidente: incidenteActualizado, // opcional: devolver el documento actualizado
     };
-  } catch (error) {
-    throw new Error("Error al cambiar el estado ");
+  } catch (error: any) {
+    console.error("Error al cambiar el estado:", error);
+    throw new Error("Error al cambiar el estado: " + error.message);
   }
-  
 };
+
 
 
 
