@@ -22,3 +22,7 @@ export interface ObtenerTodosIncidentes {
   };
 }
 
+
+export interface CambiarStatus{
+    mensaje: string;
+}

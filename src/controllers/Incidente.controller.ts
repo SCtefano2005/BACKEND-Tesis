@@ -3,7 +3,9 @@ import {
   crearIncidente,
   obtenerIncidentes,
   obtenerIncidentesPorConductor,
-  eliminarIncidente
+  eliminarIncidente,
+  obtenerIncidenteporId,
+  actualizarestado
 } from "../services/Incidente.service";
 
 //crear
@@ -59,3 +61,31 @@ export const eliminarIncidenteController = async (req: Request, res: Response) =
     res.status(400).json({ error: error.message });
   }
 };
+
+
+// Obtener incidente por ID
+export const obtenerIncidenteporIdController = async (req: Request, res: Response) => {
+  try {
+    const { id_incidente } = req.params;
+
+    const incidente = await obtenerIncidenteporId(id_incidente);
+
+    res.status(200).json(incidente); // devuelve el documento completo
+  } catch (error: any) {
+    res.status(404).json({ error: error.message });
+  }
+};
+// Actualizar estado de un incidente
+export const actualizarEstadoController = async (req: Request, res: Response) => {
+  try {
+    const { id_incidente } = req.params;
+    const { estado } = req.body;
+
+    const resultado = await actualizarestado(id_incidente, estado);
+
+    res.status(200).json(resultado); // devuelve mensaje de confirmación
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
+  }
+};
+

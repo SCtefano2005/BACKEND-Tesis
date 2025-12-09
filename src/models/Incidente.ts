@@ -3,6 +3,7 @@
 import { Schema, model, Document, Types } from "mongoose";
 
 export interface IIncidente extends Document {
+    _id: Types.ObjectId;   
     UsuarioConductorID: Types.ObjectId;
     Descripcion?: string;
     tipo: 'Desastre Natural' | 'Falla Mecanica' | 'Accidente Automovilistico' | 'Retrasos';

@@ -179,7 +179,7 @@ export const cambiarEstadoViajeConductor = async (req: Request, res: Response): 
 
 export const listarViajes = async (req: Request, res: Response): Promise<void> => {
   try {
-    const viajes = await viajeService.listarViajes();
+    const viajes = await viajeService.listarViajesService();
 
     if (!viajes || viajes.length === 0) {
       res.status(404).json({ mensaje: "No se encontraron viajes." });
@@ -198,7 +198,7 @@ export const listarViajes = async (req: Request, res: Response): Promise<void> =
 
 export const obtenerViajesEnCurso = async (req: Request, res: Response): Promise<void> => {
   try {
-    const viajes = await viajeService.listarViajeEnCurso(); // ahora sí desde el service
+    const viajes = await viajeService.listarViajeEnCursoservice(); // ahora sí desde el service
 
     if (!viajes || viajes.length === 0) {
       res.status(404).json({ mensaje: "No hay viajes en curso" });

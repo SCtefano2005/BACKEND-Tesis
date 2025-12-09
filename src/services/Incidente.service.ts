@@ -1,3 +1,4 @@
+import { error } from "console";
 import Incidente, { IIncidente } from "../models/Incidente";
 import Usuario, { IUsuario } from "../models/Usuario";
 import { IncidenteResponse, ObtenerTodosIncidentes } from "../Responses/Incidentes/Incidente.r";
@@ -33,6 +34,42 @@ export const crearIncidente = async (data: CrearIncidenteData): Promise<Incident
     throw new Error("Error al crear el incidente: " + error);
   }
 };
+
+
+export const obtenerIncidenteporId = async (id_incidente: string) => {
+  try {
+    const incidente = await Incidente.findById(id_incidente)
+      .populate("UsuarioConductorID"); // trae el documento del usuario relacionado
+
+    if (!incidente) {
+      throw new Error("No se encontró el incidente");
+    }
+
+    return incidente; // devuelve el documento completo con todos los campos y metadatos
+  } catch (error: any) {
+    console.error("Error al buscar incidente:", error);
+    throw new Error(error.message);
+  }
+};
+
+
+
+export const actualizarestado = async (id_incidente: string, estado: string) => {
+  try{
+    const IncidenteActualizado = await Incidente.findByIdAndUpdate(id_incidente, { estado: estado }, {new : true});
+    if (!IncidenteActualizado) {
+      throw new Error("Incidente no encontrado");
+    }
+    return {
+      mensaje: "Se cambio el estado satisfactoriamente"
+    };
+  } catch (error) {
+    throw new Error("Error al cambiar el estado ");
+  }
+  
+};
+
+
 
 export const obtenerIncidentes = async (): Promise<ObtenerTodosIncidentes[]> => {
   try {

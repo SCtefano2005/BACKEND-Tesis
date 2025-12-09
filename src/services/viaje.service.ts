@@ -137,7 +137,7 @@ export const buscarViajesPorRuta = async (nombre: string): Promise<IViaje[]> => 
 /**
  * Listar todos los viajes
  */
-export const listarViajes = async () => {
+export const listarViajesService = async () => {
   return await Viaje.find()
     .populate('conductor_id')
     .populate('bus_id')
@@ -145,7 +145,7 @@ export const listarViajes = async () => {
     .populate('creado_por');
 };
 
-export const listarViajeEnCurso = async () => {
+export const listarViajeEnCursoservice = async () => {
   try {
     const viajes = await Viaje.find({ estado: "en-curso" })
       .populate("conductor_id")
