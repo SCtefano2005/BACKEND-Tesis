@@ -4,6 +4,8 @@ import http from "http";
 import cors from "cors";
 import { Server as IOServer } from "socket.io";
 import Coordenada from "./models/Coordenada";
+import "dotenv/config";
+
 
 
 import authRoutes from "./routes/auth.routes";
